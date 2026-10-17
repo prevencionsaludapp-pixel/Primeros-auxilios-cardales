@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trivia de Primeros Auxilios Básicos</title>
+  <!-- Google Fonts: Poppins e Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <style>
+    :root {
+      --primary-red: #D32F2F;
+      --dark-red: #B71C1C;
+      --light-red-bg: #FFEBEE;
+      --cyan-accent: #00BCD4;
+      --dark-cyan: #00838F;
+      --white: #FFFFFF;
+      --gray-light: #F5F7FA;
+      --gray-border: #E0E0E0;
+      --text-dark: #212121;
+      --text-muted: #666666;
+      --correct-green: #2E7D32;
+      --correct-bg: #E8F5E9;
+      --incorrect-red: #C62828;
+      --incorrect-bg: #FFEBEE;
+      --card-radius: 16px;
+      --font-heading: 'Poppins', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--gray-light);
+      color: var(--text-dark);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 650px;
+      background: var(--white);
+      border-radius: var(--card-radius);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      border: 2px solid var(--primary-red);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Header Banner */
+    .header-banner {
+      background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+      color: var(--white);
+      padding: 24px 20px;
+      text-align: center;
+      position: relative;
+      border-bottom: 4px solid var(--cyan-accent);
+    }
+
+    .header-banner h1 {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .header-icons {
+      font-size: 1.8rem;
+    }
+
+    .screen {
+      display: none;
+      padding: 24px;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Disclaimer Box */
+    .disclaimer-box {
+      background-color: var(--light-red-bg);
+      border-left: 5px solid var(--cyan-accent);
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      color: var(--dark-red);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-dark);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid var(--gray-border);
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: var(--font-body);
+      transition: all 0.2s;
+      background: var(--white);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--cyan-accent);
+      box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--primary-red);
+      color: var(--white);
+      border: none;
+      border-radius: 10px;
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3);
+    }
+
+    .btn:hover {
+      background-color: var(--dark-red);
+      transform: translateY(-2px);
+    }
+
+    .btn:disabled {
+      background-color: #CCCCCC;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background-color: var(--cyan-accent);
+      box-shadow: 0 4px 10px rgba(0, 188, 212, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--dark-cyan);
+    }
+
+    /* Top Bar Quiz */
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--gray-border);
+    }
+
+    .quiz-progress {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--cyan-accent);
+    }
+
+    .timer-badge {
+      background: var(--light-red-bg);
+      color: var(--primary-red);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border: 1px solid var(--primary-red);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .question-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    /* Options */
+    .options-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .option-btn {
+      padding: 14px 16px;
+      border: 2px solid var(--gray-border);
+      border-radius: 12px;
+      background: var(--white);
+      text-align: left;
+      font-size: 0.95rem;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all 0.2s;
+      line-height: 1.4;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--cyan-accent);
+      background-color: #E0F7FA;
+    }
+
+    .option-btn.correct {
+      border-color: var(--correct-green) !important;
+      background-color: var(--correct-bg) !important;
+      color: var(--correct-green);
+      font-weight: 600;
+    }
+
+    .option-btn.incorrect {
+      border-color: var(--incorrect-red) !important;
+      background-color: var(--incorrect-bg) !important;
+      color: var(--incorrect-red);
+      font-weight: 600;
+    }
+
+    .feedback-msg {
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      text-align: center;
+      display: none;
+    }
+
+    .feedback-msg.correct {
+      display: block;
+      background-color: var(--correct-bg);
+      color: var(--correct-green);
+      border: 1px solid var(--correct-green);
+    }
+
+    .feedback-msg.incorrect {
+      display: block;
+      background-color: var(--incorrect-bg);
+      color: var(--incorrect-red);
+      border: 1px solid var(--incorrect-red);
+    }
+
+    /* Podium & Leaderboard */
+    .podium-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 12px;
+      margin: 24px 0;
+      height: 180px;
+    }
+
+    .podium-step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-radius: 12px 12px 0 0;
+      padding: 8px 4px;
+      color: var(--white);
+      text-align: center;
+      position: relative;
+    }
+
+    .podium-step.first {
+      height: 100%;
+      background: linear-gradient(180deg, #FFD700, #FFA000);
+      order: 2;
+    }
+
+    .podium-step.second {
+      height: 80%;
+      background: linear-gradient(180deg, #C0C0C0, #78909C);
+      order: 1;
+    }
+
+    .podium-step.third {
+      height: 65%;
+      background: linear-gradient(180deg, #CD7F32, #8D6E63);
+      order: 3;
+    }
+
+    .podium-rank {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .podium-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 4px;
+    }
+
+    .podium-score {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    .leaderboard-table-wrapper {
+      max-height: 250px;
+      overflow-y: auto;
+      border: 1px solid var(--gray-border);
+      border-radius: 10px;
+      margin-top: 16px;
+    }
+
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+
+    .leaderboard-table th {
+      background-color: var(--light-red-bg);
+      color: var(--dark-red);
+      padding: 10px;
+      position: sticky;
+      top: 0;
+      font-weight: 700;
+    }
+
+    .leaderboard-table td {
+      padding: 10px;
+      border-bottom: 1px solid var(--gray-border);
+    }
+
+    .leaderboard-table tr:nth-child(even) {
+      background-color: #FAFAFA;
+    }
+
+    .loading-spinner {
+      text-align: center;
+      padding: 20px;
+      color: var(--cyan-accent);
+      font-weight: 600;
+    }
+
+    /* Decorative Medical Icons */
+    .bg-icon {
+      position: absolute;
+      opacity: 0.05;
+      pointer-events: none;
+      font-size: 10rem;
+      right: -20px;
+      bottom: -20px;
+    }
+
+    @media (max-width: 480px) {
+      .header-banner h1 {
+        font-size: 1.4rem;
+      }
+      .screen {
+        padding: 16px;
+      }
+      .question-title {
+        font-size: 1rem;
+      }
+      .option-btn {
+        font-size: 0.88rem;
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-banner">
+    <h1>
+      <span class="header-icons">🚑</span>
+      Primeros Auxilios
+       CARDALES
+      <span class="header-icons">🩺</span>
+    </h1>
+  </div>
+
+  <!-- PANTALLA 1: REGISTRO E INICIO -->
+  <div id="screen-start" class="screen active">
+    <div class="disclaimer-box">
+      <span>⚠️</span>
+      <div>Se evaluarán tus conocimientos en primeros auxilios básicos. ¡Tienes 10 minutos máximo para completar el desafío!</div>
+    </div>
+
+    <form id="start-form">
+      <div class="form-group">
+        <label for="input-name">Nombre o Alias *</label>
+        <input type="text" id="input-name" class="form-control" placeholder="Ej. Juan Pérez" required>
+      </div>
+
+      <div class="form-group">
+        <label for="select-sector">Sector *</label>
+        <select id="select-sector" class="form-control" required>
+          <option value="" disabled selected>Selecciona tu sector...</option>
+          <option value="ADMINISTRACION">ADMINISTRACION</option>
+          <option value="ALMACEN GENERAL">ALMACEN GENERAL</option>
+          <option value="CONTRALOR">CONTRALOR</option>
+          <option value="CONTROL DE CALIDAD">CONTROL DE CALIDAD</option>
+          <option value="CORTE">CORTE</option>
+          <option value="DESCARGA">DESCARGA</option>
+          <option value="ESPEJO">ESPEJO</option>
+          <option value="FINANZAS">FINANZAS</option>
+          <option value="HVF">HVF</option>
+          <option value="IT">IT</option>
+          <option value="LABORATORIO">LABORATORIO</option>
+          <option value="MANTENIMIENTO Y PROCESADOS">MANTENIMIENTO Y PROCESADOS</option>
+          <option value="MANTENIMIENTO-HVF">MANTENIMIENTO-HVF</option>
+          <option value="MASS">MASS</option>
+          <option value="PCP">PCP</option>
+          <option value="PRIME">PRIME</option>
+          <option value="RRHH">RRHH</option>
+          <option value="SERTEC">SERTEC</option>
+          <option value="SERVICIO MEDICO">SERVICIO MEDICO</option>
+          <option value="SGI">SGI</option>
+          <option value="SRF">SRF</option>
+          <option value="SRT">SRT</option>
+          <option value="VENTAS EXPORTACION">VENTAS EXPORTACION</option>
+          <option value="VENTAS LOCAL">VENTAS LOCAL</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="select-instructor">Instructor *</label>
+        <select id="select-instructor" class="form-control" required>
+          <option value="" disabled selected>Selecciona tu instructor...</option>
+          <option value="Diana">Diana</option>
+          <option value="Maribel">Maribel</option>
+          <option value="Natalia">Natalia</option>
+          <option value="Yesica">Yesica</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn" style="margin-bottom: 12px;">Comenzar Trivia ➔</button>
+      <button type="button" id="btn-view-leaderboard" class="btn btn-secondary">🏆 Ver Podio y Participantes</button>
+    </form>
+    <div class="bg-icon">🏥</div>
+  </div>
+
+  <!-- PANTALLA 2: PREGUNTAS -->
+  <div id="screen-quiz" class="screen">
+    <div class="quiz-header">
+      <div class="quiz-progress" id="quiz-progress">Pregunta 1 de 10</div>
+      <div class="timer-badge">
+        ⏱️ <span id="timer-display">10:00</span>
+      </div>
+    </div>
+
+    <div class="question-title" id="question-text">Cargando pregunta...</div>
+
+    <div class="options-container" id="options-container"></div>
+
+    <div id="feedback-msg" class="feedback-msg"></div>
+
+    <button id="btn-next" class="btn" style="display: none;">Siguiente Pregunta ➔</button>
+  </div>
+
+  <!-- PANTALLA 3: RESULTADOS Y PODIO -->
+  <div id="screen-results" class="screen">
+    <h2 style="text-align: center; color: var(--primary-red); margin-bottom: 8px;" id="results-title">¡Evaluación Finalizada!</h2>
+    <p style="text-align: center; color: var(--text-muted); font-size: 0.95rem;" id="user-summary"></p>
+
+    <!-- PODIO EN VIVO -->
+    <div class="podium-container" id="podium-container">
+      <div class="podium-step second">
+        <div class="podium-rank">2º</div>
+        <div class="podium-name" id="p2-name">---</div>
+        <div class="podium-score" id="p2-score">-</div>
+      </div>
+      <div class="podium-step first">
+        <div class="podium-rank">👑 1º</div>
+        <div class="podium-name" id="p1-name">---</div>
+        <div class="podium-score" id="p1-score">-</div>
+      </div>
+      <div class="podium-step third">
+        <div class="podium-rank">3º</div>
+        <div class="podium-name" id="p3-name">---</div>
+        <div class="podium-score" id="p3-score">-</div>
+      </div>
+    </div>
+
+    <h3 style="font-size: 1rem; margin-top: 20px; color: var(--text-dark);">Historial de Participantes</h3>
+    
+    <div id="loading-leaderboard" class="loading-spinner">Cargando datos de la Hoja de Cálculo...</div>
+
+    <div class="leaderboard-table-wrapper" id="leaderboard-wrapper" style="display: none;">
+      <table class="leaderboard-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Sector</th>
+            <th>Puntos</th>
+            <th>Tiempo</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body">
+        </tbody>
+      </table>
+    </div>
+
+    <button id="btn-restart" class="btn btn-secondary" style="margin-top: 20px;">Volver al Inicio 🔄</button>
+  </div>
+</div>
+
+<script>
+  // ENLACE DE GOOGLE SHEETS APPS SCRIPT
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby3h17uW3AmcRvA83OstvVUPbqY3JddtHwN2m1NzIkuiOiBQqDIvF2C8VTC2-n8NQzC/exec";
+
+  // PREGUNTAS
+  const quizQuestions = [
+    {
+      q: "1. Para realizar los primeros auxilios en cualquier incidente o accidente, Mis prioridades para accionar serán...",
+      options: [
+        "Evaluar la escena > Dar aviso > Accionar.",
+        "Dar aviso > Evaluar la escena > Accionar",
+        "Accionar > Dar aviso > Evaluar la escena",
+        "Evaluar la escena > Accionar > Dar aviso"
+      ],
+      correct: 0
+    },
+    {
+      q: "2. Primeros auxilios en Convulsiones",
+      options: [
+        "Trato de retener los movimientos.",
+        "Priorizo la vía aérea colocándole un objeto o mi mano en la boca para evitar que se muerda la lengua.",
+        "Libero la zona de objetos que podrían golpearlo aún más.",
+        "Trato de inmovilizar la cabeza para evitar que se lesione."
+      ],
+      correct: 2
+    },
+    {
+      q: "3. Primeros auxilios en Obstrucción de la vía aérea de forma completa.",
+      options: [
+        "Dar de comer o beber algo para que el objeto obstructivo termine de pasar",
+        "Dar palmadas entre los omoplatos hasta que libere el objeto que obstruye la vía aérea",
+        "Darle la indicación que levante las manos y golpear su espalda hasta que libere el objeto.",
+        "Utilizar la maniobra de Heimlich que consiste en dar compresiones en J sobre el abdomen a la altura del diafragma hasta que se desobstruya la vía aérea."
+      ],
+      correct: 3
+    },
+    {
+      q: "4. Primeros auxilios en IAM (INFARTO AGUDO DEL MIOCARDIO)",
+      options: [
+        "Detectar signos y síntomas mediante la observación y solicitar asistencia médica inmediata",
+        "Dar aspirinas para que mastique.",
+        "Dar de tomar agua.",
+        "No puedo hacer nada ya que ocurre de forma desprevenida y súbita."
+      ],
+      correct: 0
+    },
+    {
+      q: "5. Primeros auxilios en ACV (Accidente Cerebro Vascular)",
+      options: [
+        "No puedo hacer nada ya que ocurre de forma súbita.",
+        "Pinchar lóbulos de las orejas y dedos para liberar la presión",
+        "Dar antihipertensivos para bajar la presión",
+        "Detectar signos y síntomas mediante la observación y solicitar asistencia médica inmediata"
+      ],
+      correct: 3
+    },
+    {
+      q: "6. Primeros auxilios en casos de Electrocución",
+      options: [
+        "Puedo tocarlo sin correr riesgo alguno.",
+        "Alejar a la víctima con un elemento o empujarlo, para aislarlo.",
+        "Cortar la energía eléctrica.",
+        "Apagar el equipo crítico."
+      ],
+      correct: 2
+    },
+    {
+      q: "7. Primeros Auxilios en Quemaduras.",
+      options: [
+        "Colocar ungüentos, geles o cremas especiales para quemaduras.",
+        "Dejar correr agua a temperatura ambiente por al menos 15 minutos sobre la zona afectada",
+        "Sumergir la zona afectada en un recipiente con hielo por al menos unos 15 minutos",
+        "Romper una clara de huevo, colocar rodajas de tomate o dentífrico sobre la zona afectada."
+      ],
+      correct: 1
+    },
+    {
+      q: "8. Primeros auxilios en Corte/Hemorragias",
+      options: [
+        "Realizo vendaje compresivo",
+        "Coloco el torniquete",
+        "Realizo compresión directa",
+        "Recambio apósitos, hasta la llegada de SM."
+      ],
+      correct: 0
+    },
+    {
+      q: "9. Primeros auxilios en Politrauma / Caídas en altura.",
+      options: [
+        "Colocarlo en posición supina (boca arriba)",
+        "Realizar técnica de cuello + mentón para inmovilizar y preservar la columna cervical",
+        "Colocarlo en posición lateral de seguridad.",
+        "No hay nada que pueda hacer ya que me comprometería si presenta algún daño"
+      ],
+      correct: 1
+    },
+    {
+      q: "10. En la maniobra posición lateral de seguridad ¿qué es lo que priorizamos?",
+      options: [
+        "Evitar la broncoaspiración y tener control del estado de la víctima.",
+        "Para que respire mejor y facilitar el traslado cuando llega SM",
+        "La estabilidad cervical y la vía aérea",
+        "Evitar un nuevo episodio convulsivo."
+      ],
+      correct: 0
+    }
+  ];
+
+  // EFECTOS DE SONIDO (Web Audio API)
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  function playSuccessSound() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3);
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.3);
+  }
+
+  function playErrorSound() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.3);
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.3);
+  }
+
+  // ESTADO DEL JUEGO
+  let userData = { nombre: '', sector: '', instructor: '' };
+  let currentQuestion = 0;
+  let score = 0;
+  let totalTimeSeconds = 600;
+  let timerInterval = null;
+  let timeElapsed = 0;
+
+  // ELEMENTOS DOM
+  const screenStart = document.getElementById('screen-start');
+  const screenQuiz = document.getElementById('screen-quiz');
+  const screenResults = document.getElementById('screen-results');
+  const startForm = document.getElementById('start-form');
+  const questionText = document.getElementById('question-text');
+  const optionsContainer = document.getElementById('options-container');
+  const feedbackMsg = document.getElementById('feedback-msg');
+  const btnNext = document.getElementById('btn-next');
+  const quizProgress = document.getElementById('quiz-progress');
+  const timerDisplay = document.getElementById('timer-display');
+
+  // INICIAR TRIVIA
+  startForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    userData.nombre = document.getElementById('input-name').value.trim();
+    userData.sector = document.getElementById('select-sector').value;
+    userData.instructor = document.getElementById('select-instructor').value;
+
+    if (!userData.nombre || !userData.sector || !userData.instructor) return;
+
+    screenStart.classList.remove('active');
+    screenQuiz.classList.add('active');
+    
+    startTimer();
+    loadQuestion();
+  });
+
+  // BOTÓN PARA VER PODIO DESDE EL INICIO
+  document.getElementById('btn-view-leaderboard').addEventListener('click', () => {
+    screenStart.classList.remove('active');
+    screenResults.classList.add('active');
+    
+    // Ocultar resumen personal y cambiar título ya que sólo se está consultando
+    document.getElementById('results-title').textContent = "Podio y Participantes";
+    document.getElementById('user-summary').innerHTML = "Consulta general del ranking de participantes.";
+    
+    fetchLeaderboardOnly();
+  });
+
+  // TEMPORIZADOR
+  function startTimer() {
+    timeElapsed = 0;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      timeElapsed++;
+      const remaining = totalTimeSeconds - timeElapsed;
+      if (remaining <= 0) {
+        clearInterval(timerInterval);
+        finishQuiz();
+      } else {
+        updateTimerDisplay();
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    const remaining = Math.max(0, totalTimeSeconds - timeElapsed);
+    const m = Math.floor(remaining / 60);
+    const s = remaining % 60;
+    timerDisplay.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  }
+
+  function formatTime(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  }
+
+  // CARGAR PREGUNTA
+  function loadQuestion() {
+    const q = quizQuestions[currentQuestion];
+    quizProgress.textContent = `Pregunta ${currentQuestion + 1} de ${quizQuestions.length}`;
+    questionText.textContent = q.q;
+    optionsContainer.innerHTML = '';
+    feedbackMsg.className = 'feedback-msg';
+    feedbackMsg.style.display = 'none';
+    btnNext.style.display = 'none';
+
+    q.options.forEach((optText, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerHTML = `<strong>${String.fromCharCode(65 + idx)}.</strong> ${optText}`;
+      btn.onclick = () => selectOption(idx);
+      optionsContainer.appendChild(btn);
+    });
+  }
+
+  // RESPONDER PREGUNTA
+  function selectOption(selectedIdx) {
+    const q = quizQuestions[currentQuestion];
+    const buttons = optionsContainer.querySelectorAll('.option-btn');
+
+    buttons.forEach(b => b.disabled = true);
+
+    if (selectedIdx === q.correct) {
+      score++;
+      buttons[selectedIdx].classList.add('correct');
+      feedbackMsg.textContent = "¡Correcto! Excelente respuesta. 🎉";
+      feedbackMsg.className = 'feedback-msg correct';
+      playSuccessSound();
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      }
+    } else {
+      buttons[selectedIdx].classList.add('incorrect');
+      buttons[q.correct].classList.add('correct');
+      feedbackMsg.textContent = `Incorrecto. La respuesta correcta era: ${q.options[q.correct]}`;
+      feedbackMsg.className = 'feedback-msg incorrect';
+      playErrorSound();
+    }
+
+    btnNext.style.display = 'flex';
+  }
+
+  btnNext.addEventListener('click', () => {
+    currentQuestion++;
+    if (currentQuestion < quizQuestions.length) {
+      loadQuestion();
+    } else {
+      clearInterval(timerInterval);
+      finishQuiz();
+    }
+  });
+
+  // COMPLETAR TRIVIA Y GUARDAR
+  function finishQuiz() {
+    screenQuiz.classList.remove('active');
+    screenResults.classList.add('active');
+
+    document.getElementById('results-title').textContent = "¡Evaluación Finalizada!";
+    document.getElementById('user-summary').innerHTML = 
+      `<strong>${userData.nombre}</strong> (${userData.sector})<br>Puntaje: <strong>${score}/10</strong> | Tiempo: <strong>${formatTime(timeElapsed)}</strong>`;
+
+    sendAndFetchData();
+  }
+
+  // CONEXIÓN JSONP PARA GUARDAR Y LEER
+  function sendAndFetchData() {
+    const loading = document.getElementById('loading-leaderboard');
+    loading.style.display = 'block';
+
+    const callbackName = 'handleGoogleSheetResponse';
+    
+    window[callbackName] = function(data) {
+      loading.style.display = 'none';
+      document.getElementById('leaderboard-wrapper').style.display = 'block';
+      renderLeaderboard(data);
+      
+      const oldScript = document.getElementById('jsonp-script');
+      if (oldScript) oldScript.remove();
+    };
+
+    const url = `${SCRIPT_URL}?action=save` +
+      `&nombre=${encodeURIComponent(userData.nombre)}` +
+      `&sector=${encodeURIComponent(userData.sector)}` +
+      `&instructor=${encodeURIComponent(userData.instructor)}` +
+      `&score=${score}` +
+      `&tiempo=${encodeURIComponent(formatTime(timeElapsed))}` +
+      `&callback=${callbackName}`;
+
+    const script = document.createElement('script');
+    script.id = 'jsonp-script';
+    script.src = url;
+    script.onerror = function() {
+      loading.textContent = "Error de conexión con la planilla de Google.";
+    };
+    document.body.appendChild(script);
+  }
+
+  // SOLO LEER DATOS (PARA EL BOTÓN DE INICIO)
+  function fetchLeaderboardOnly() {
+    const loading = document.getElementById('loading-leaderboard');
+    loading.style.display = 'block';
+
+    const callbackName = 'handleGoogleSheetRead';
+    
+    window[callbackName] = function(data) {
+      loading.style.display = 'none';
+      document.getElementById('leaderboard-wrapper').style.display = 'block';
+      renderLeaderboard(data);
+      
+      const oldScript = document.getElementById('jsonp-script');
+      if (oldScript) oldScript.remove();
+    };
+
+    const url = `${SCRIPT_URL}?callback=${callbackName}`;
+
+    const script = document.createElement('script');
+    script.id = 'jsonp-script';
+    script.src = url;
+    script.onerror = function() {
+      loading.textContent = "Error de conexión con la planilla de Google.";
+    };
+    document.body.appendChild(script);
+  }
+
+  // RENDERIZAR TABLA Y PODIO
+  function renderLeaderboard(data) {
+    if (!Array.isArray(data)) return;
+
+    data.sort((a, b) => {
+      if (b.score !== a.score) {
+        return b.score - a.score;
+      }
+      return (a.tiempo || '').localeCompare(b.tiempo || '');
+    });
+
+    document.getElementById('p1-name').textContent = data[0] ? data[0].nombre : '---';
+    document.getElementById('p1-score').textContent = data[0] ? `${data[0].score}/10` : '-';
+
+    document.getElementById('p2-name').textContent = data[1] ? data[1].nombre : '---';
+    document.getElementById('p2-score').textContent = data[1] ? `${data[1].score}/10` : '-';
+
+    document.getElementById('p3-name').textContent = data[2] ? data[2].nombre : '---';
+    document.getElementById('p3-score').textContent = data[2] ? `${data[2].score}/10` : '-';
+
+    const tbody = document.getElementById('leaderboard-body');
+    tbody.innerHTML = '';
+    data.forEach((row, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${index + 1}</strong></td>
+        <td>${row.nombre || '-'}</td>
+        <td>${row.sector || '-'}</td>
+        <td><strong>${row.score}/10</strong></td>
+        <td>${row.tiempo || '-'}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // VOLVER AL INICIO
+  document.getElementById('btn-restart').addEventListener('click', () => {
+    currentQuestion = 0;
+    score = 0;
+    timeElapsed = 0;
+    document.getElementById('leaderboard-wrapper').style.display = 'none';
+    screenResults.classList.remove('active');
+    screenStart.classList.add('active');
+    document.getElementById('start-form').reset();
+  });
+</script>
+
+</body>
+</html>
